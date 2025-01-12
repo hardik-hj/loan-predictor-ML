@@ -64,5 +64,4 @@ def toggle_dark_mode():
 
 # Run the application
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=False)  # This allows external access
-  # Disable debug mode in production
+    app.run()
