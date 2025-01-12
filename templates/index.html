@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Payment Prediction Model</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            overflow: hidden;
+            position: relative;
+            transition: background 0.3s ease;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(27, 148, 224, 0.1) 1%, transparent 1%);
+            background-size: 10px 10px;
+            z-index: 0;
+        }
+
+        .landing {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            z-index: 1;
+            position: relative;
+        }
+
+        h1 {
+            color: white;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+        }
+
+        /* Form Styles */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        input[type="text"] {
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            font-size: 16px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        button[type="submit"] {
+            padding: 14px;
+            background: linear-gradient(135deg, #6A11CB, #2575FC);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Prediction result */
+        .prediction {
+            margin-top: 20px;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            text-align: center;
+            animation: fadeIn 0.6s ease-in-out;
+            color: white;
+        }
+
+        .prediction.success {
+            background: linear-gradient(135deg, #32CD32, #00FA9A);
+        }
+
+        .prediction.error {
+            background: linear-gradient(135deg, #FF4B2B, #FF416C);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 24px;
+            }
+
+            input[type="text"] {
+                font-size: 14px;
+            }
+
+            button[type="submit"] {
+                font-size: 14px;
+            }
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background: linear-gradient(135deg, #1c1c1c, #434343);
+        }
+
+        .dark-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 18px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+        }
+
+        .dark-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body class="{{ 'dark-mode' if dark_mode else '' }}">
+    <!-- Dark Mode Toggle Button -->
+    <button class="dark-toggle" onclick="toggleDarkMode()">🌙</button>
+
+    <div class="landing">
+        <h1>Loan Repayment Prediction</h1>
+        <p>Enter your details to predict repayment of loan.</p>
+
+        <form action="{{ url_for('predict') }}" method="post">
+            <input type="text" name="int_rate" placeholder="Interest Rate (%)" value="{{ int_rate }}" required="required" />
+            <input type="text" name="dti" placeholder="Debt-to-Income Ratio" value="{{ dti }}" required="required" />
+            <input type="text" name="annual_inc" placeholder="Annual Income (₹)" value="{{ annual_inc }}" required="required" />
+            <input type="text" name="loan_amnt" placeholder="Loan Amount (₹)" value="{{ loan_amnt }}" required="required" />
+            <input type="text" name="inq_last_6mnths" placeholder="Inquiries (Last 6 Months)" value="{{ inq_last_6mnths }}" required="required" />
+            <input type="text" name="mths_since_last_delinq" placeholder="Months Since Last Delinquency" value="{{ mths_since_last_delinq }}" required="required" />
+
+            <button type="submit">Predict</button>
+        </form>
+
+        <div class="prediction {{ prediction_class }}">
+            {{ prediction_text }}
+        </div>
+    </div>
+
+    <script>
+        // Toggle Dark Mode Function
+        function toggleDarkMode() {
+            // Send a request to the backend to toggle dark mode
+            fetch('/toggle_dark_mode', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.dark_mode) {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
